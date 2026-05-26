@@ -37,6 +37,19 @@ async function FetchWEAO(url) {
 
 const KNOWN_FILE = path.join(__dirname, "known.json");
 
+// Auto-create known.json if it is missing
+if (!fs.existsSync(KNOWN_FILE)) {
+  try {
+    fs.writeFileSync(KNOWN_FILE, JSON.stringify({
+      Unpublished: {},
+      Published: {},
+      LastLiveVersion: null
+    }, null, 4));
+  } catch (e) {
+    console.log("Failed to create known.json:", e);
+  }
+}
+
 function GetLatestPublished(KnownVersions) {
   const Versions = Object.keys(KnownVersions["Published"]);
   if (Versions.length === 0) return null;
