@@ -2,9 +2,26 @@ const fetch = require("@replit/node-fetch");
 const fs = require("fs");
 const path = require("path");
 
-const Config = require(path.join(__dirname, "config.json"));
+let Config = {};
+try {
+  Config = require(path.join(__dirname, "config.json"));
+} catch (e) {
+  console.log("config.json not found, relying on environment variables or defaults.");
+}
 
-WEBHOOK_URL = Config["WebhookURL"];
+const WEBHOOK_URL = process.env.WEBHOOK_URL || Config["WebhookURL"];
+const PING_ROLE_ID = process.env.PING_ROLE_ID || Config["PingRoleID"];
+
+const EMBED_FOOTER = Config["EmbedFooter"] || {
+  text: "getcomet.lol",
+  icon_url: "https://media.discordapp.net/attachments/1448420848204517420/1454605469904797746/Normal.png?ex=6a12d629&is=6a1184a9&hm=e8336ce4b85b7e8df63bc4c024de11703523f136928304fb3d7cc732b6d847df&=&format=webp&quality=lossless&width=873&height=873"
+};
+
+const EMBED_DESCRIPTIONS = Config["EmbedDescriptions"] || {
+  PreUpdate: "An unpublished Roblox version has been detected on the `LIVE` channel!\nThis means the update is **NOT** released yet, but will be within ~24 hours.",
+  Update: "A new Roblox version has been detected on the `LIVE` channel!\nThis means the update **IS** released! Most externals / executors will be down temporarily.*",
+  Revert: "Roblox has reverted to a previous version on the `LIVE` channel!\nThis means that some exploits or externals **MAY** be down temporarily."
+};
 
 const WEAO_CURRENT_URL = "https://weao.xyz/api/versions/current";
 const WEAO_FUTURE_URL = "https://weao.xyz/api/versions/future";
@@ -18,7 +35,7 @@ async function FetchWEAO(url) {
   return await response.json();
 }
 
-KNOWN_FILE = path.join(__dirname, "known.json");
+const KNOWN_FILE = path.join(__dirname, "known.json");
 
 function GetLatestPublished(KnownVersions) {
   const Versions = Object.keys(KnownVersions["Published"]);
@@ -32,14 +49,18 @@ function GetLatestPublished(KnownVersions) {
 }
 
 async function SendRevert(VersionHash, PreviousVersion) {
+  if (!WEBHOOK_URL) {
+    console.log("No webhook URL configured. Skipping webhook.");
+    return;
+  }
   const EmbedData = {
-    content: `<@&${Config["PingRoleID"]}>`,
+    content: PING_ROLE_ID ? `<@&${PING_ROLE_ID}>` : "",
     embeds: [
       {
         title: "Update Reverted",
-        description: Config["EmbedDescriptions"]["Revert"],
+        description: EMBED_DESCRIPTIONS["Revert"],
         color: 10181046,
-        footer: Config["EmbedFooter"],
+        footer: EMBED_FOOTER,
         timestamp: new Date().toISOString(),
         fields: [
           {
@@ -70,14 +91,18 @@ async function SendRevert(VersionHash, PreviousVersion) {
 }
 
 async function SendPreUpdate(VersionHash) {
+  if (!WEBHOOK_URL) {
+    console.log("No webhook URL configured. Skipping webhook.");
+    return;
+  }
   const EmbedData = {
-    content: `<@&${Config["PingRoleID"]}>`,
+    content: PING_ROLE_ID ? `<@&${PING_ROLE_ID}>` : "",
     embeds: [
       {
         title: "Future Update Detected",
-        description: Config["EmbedDescriptions"]["PreUpdate"],
+        description: EMBED_DESCRIPTIONS["PreUpdate"],
         color: 3639030,
-        footer: Config["EmbedFooter"],
+        footer: EMBED_FOOTER,
         timestamp: new Date().toISOString(),
         fields: [
           {
@@ -124,14 +149,18 @@ async function SendPreUpdate(VersionHash) {
 }
 
 async function SendUpdate(VersionHash) {
+  if (!WEBHOOK_URL) {
+    console.log("No webhook URL configured. Skipping webhook.");
+    return;
+  }
   const EmbedData = {
-    content: `<@&${Config["PingRoleID"]}>`,
+    content: PING_ROLE_ID ? `<@&${PING_ROLE_ID}>` : "",
     embeds: [
       {
         title: "Update Detected",
-        description: Config["EmbedDescriptions"]["Update"],
+        description: EMBED_DESCRIPTIONS["Update"],
         color: 16725044,
-        footer: Config["EmbedFooter"],
+        footer: EMBED_FOOTER,
         timestamp: new Date().toISOString(),
         fields: [
           {
