@@ -1,0 +1,5 @@
+node_modules
+known-default.json
+known.json
+config.json
+fake-version.js

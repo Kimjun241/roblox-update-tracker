@@ -1,0 +1,13 @@
+{
+  "WebhookURL": "YOUR_DISCORD_WEBHOOK_URL_HERE",
+  "PingRoleID": "YOUR_PING_ROLE_ID_HERE",
+  "EmbedFooter": {
+    "text": "getcomet.lol",
+    "icon_url": "https://media.discordapp.net/attachments/1448420848204517420/1454605469904797746/Normal.png?ex=6a12d629&is=6a1184a9&hm=e8336ce4b85b7e8df63bc4c024de11703523f136928304fb3d7cc732b6d847df&=&format=webp&quality=lossless&width=873&height=873"
+  },
+  "EmbedDescriptions": {
+    "PreUpdate": "An unpublished Roblox version has been detected on the `LIVE` channel!\nThis means the update is **NOT** released yet, but will be within ~24 hours.",
+    "Update": "A new Roblox version has been detected on the `LIVE` channel!\nThis means the update **IS** released! Most externals / executors will be down temporarily.*",
+    "Revert": "Roblox has reverted to a previous version on the `LIVE` channel!\nThis means that some exploits or externals **MAY** be down temporarily."
+  }
+}
